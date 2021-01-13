@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+
 import '../models.dart';
 import 'parameter_template.dart';
 
@@ -42,20 +43,14 @@ const $outputName = _\$${name}TearOff();
 
   Iterable<String> get tearOffs sync* {
     for (final targetConstructor in allConstructors) {
-      final ctorName =
-          targetConstructor.isDefault ? 'call' : targetConstructor.name;
+      final ctorName = targetConstructor.isDefault ? 'call' : targetConstructor.name;
 
       final parameters = StringBuffer();
-      for (final positional
-          in targetConstructor.parameters.allPositionalParameters) {
+      for (final positional in targetConstructor.parameters.allPositionalParameters) {
         parameters..write(positional.name)..write(',');
       }
       for (final named in targetConstructor.parameters.namedParameters) {
-        parameters
-          ..write(named.name)
-          ..write(':')
-          ..write(named.name)
-          ..write(',');
+        parameters..write(named.name)..write(':')..write(named.name)..write(',');
       }
 
       var prefix = '';
@@ -66,6 +61,7 @@ const $outputName = _\$${name}TearOff();
       }
 
       yield '''
+// 1
 // ignore: unused_element
 ${targetConstructor.redirectedName}$genericsParameter $ctorName$genericsDefinition(${targetConstructor.parameters.asExpanded(showDefaultValue: true)}) {
   return $prefix ${targetConstructor.redirectedName}$genericsParameter($parameters);
@@ -75,6 +71,7 @@ ${targetConstructor.redirectedName}$genericsParameter $ctorName$genericsDefiniti
 
     if (serializable) {
       yield '''
+// 2
 // ignore: unused_element
 $name$genericsParameter fromJson$genericsDefinition(Map<String, Object> json) {
   return $name$genericsParameter.fromJson(json);
